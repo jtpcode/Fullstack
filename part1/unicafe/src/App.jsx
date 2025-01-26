@@ -8,19 +8,57 @@ const Button = ({ onClick, text }) => (
   </button>
 )
 
-const Line = ({ text, value }) => (
-  <p>
-    {text} {value}
-  </p>
-)
+const StatisticLine = ({ text, value }) => {
+  if (text === 'Positive') {
+    return (
+      <div>
+        {text} {value} %
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      {text} {value}
+    </div>
+  )
+}
+
+const Statistics = ({ stats }) => {
+  const good = 1
+  const neutral = 0
+  const bad = -1
+  const all = stats[0] + stats[1] + stats[2]
+  const average = (stats[0]*good + stats[1]*neutral + stats[2]*bad) / all
+  const positive = (stats[0] / all) * 100
+
+  if (all === 0) {
+    return (
+      <div>
+        No feedback given
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <StatisticLine text='Good' value={stats[0]} />
+      <StatisticLine text='Neutral' value={stats[1]} />
+      <StatisticLine text='Bad' value={stats[2]} />
+      <StatisticLine text='All' value={all} />
+      <StatisticLine text='Average' value={average} />
+      <StatisticLine text='Positive' value={positive} />
+    </div>
+  )
+}
 
 const App = () => {
-  // tallenna napit omaan tilaansa
+  // States
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
 
-  // Header-text
+  // Header text
   const header1 = 'Unicafe Feedback System'
   const header2 = 'Statistics'
 
@@ -44,9 +82,7 @@ const App = () => {
       <Button onClick={handleNeutralClick} text='Neutral'/>
       <Button onClick={handleBadClick} text='Bad'/>
       <Header header={header2} />
-      <Line text='Good' value={good} />
-      <Line text='Neutral' value={neutral} />
-      <Line text='Bad' value={bad} />
+      <Statistics stats={[good, neutral, bad]} />
     </div>
   )
 }
