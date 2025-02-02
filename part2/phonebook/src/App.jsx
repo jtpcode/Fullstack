@@ -45,8 +45,8 @@ const App = () => {
     }
 
     const nameExists = persons.some(person => person.name === newName)
-    
-    {nameExists ? alert('Name already exists.') : setPersons(persons.concat(nameObject))}
+
+    {nameExists ? alert(`Name ${newName} already exists.`) : setPersons(persons.concat(nameObject))}
     setNewName('')
   }
 
