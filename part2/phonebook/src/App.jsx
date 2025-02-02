@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const Phonebook = ({ newName, handleNameChange, addName }) => {
-  return(
+  return (
     <form onSubmit={addName}>
       <div>
         name: <input 
@@ -44,7 +44,9 @@ const App = () => {
       name: newName
     }
 
-    setPersons(persons.concat(nameObject))
+    const nameExists = persons.some(person => person.name === newName)
+    
+    {nameExists ? alert('Name already exists.') : setPersons(persons.concat(nameObject))}
     setNewName('')
   }
 
@@ -70,22 +72,6 @@ const App = () => {
     </div>
     
   )
-  // return (
-  //   <div>
-  //     <h2>Phonebook</h2>
-  //     <form>
-  //       <div>
-  //         name: <input />
-  //       </div>
-  //       <div>
-  //         <button type="submit">add</button>
-  //       </div>
-  //     </form>
-  //     <h2>Numbers</h2>
-  //     ...
-  //   </div>
-  // )
-
 }
 
 export default App
