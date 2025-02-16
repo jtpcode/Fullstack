@@ -37,7 +37,7 @@ const PersonForm = ({ newName, newNumber, handleNameChange, handleNumberChange, 
   )
 }
 
-const Persons = ({ persons, newFilter }) => {
+const Persons = ({ persons, newFilter, deletePerson }) => {
   const filtered_persons = persons.filter(person =>
     person.name.toLowerCase().includes(newFilter.toLowerCase())
   )
@@ -45,13 +45,23 @@ const Persons = ({ persons, newFilter }) => {
   return (
     <div>
       {filtered_persons.map(person => 
-        <Person key={person.name} person={person} />
+        <Person
+          key={person.name}
+          person={person}
+          deletePerson={(event) => deletePerson(event, person)} />
       )}
     </div>
   )
 }
 
-const Person = ({ person }) => <p>{person.name}: {person.number}</p>
+const Person = ({ person, deletePerson }) => {
+  return (
+    <p>
+      {person.name}: {person.number}
+      <button onClick={deletePerson}>Poista</button>
+    </p>
+  )
+}
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -95,6 +105,16 @@ const App = () => {
     setNewNumber('')
   }
 
+  const deletePerson = (event, person) => {
+    event.preventDefault()
+
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService
+        .deleteObject(person.id)
+        .then(() => setPersons(persons.filter(p => p.id !== person.id)))
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -112,7 +132,11 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons persons={persons} newFilter={newFilter}/>
+      <Persons
+        persons={persons}
+        newFilter={newFilter}
+        deletePerson={deletePerson}
+      />
     </div>
     
   )
