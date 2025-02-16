@@ -57,8 +57,7 @@ const Persons = ({ persons, newFilter, deletePerson }) => {
 const Person = ({ person, deletePerson }) => {
   return (
     <p>
-      {person.name}: {person.number}
-      <button onClick={deletePerson}>Poista</button>
+      {person.name}: {person.number} <button onClick={deletePerson}>Poista</button>
     </p>
   )
 }
@@ -91,7 +90,14 @@ const App = () => {
     const personExists = persons.some(person => person.name === newName)
 
     if (personExists) {
-      alert(`Name ${newName} already exists.`)
+      const person = persons.find(p => p.name === newName)
+      if (window.confirm(`Name ${newName} already exists. Replace number?`)) {
+        personService
+          .replace(person, newNumber)
+          .then(changedPerson => {
+            setPersons(persons.map(person => person.name !== newName ? person : changedPerson))
+          })
+      }
     }
     else {
       personService
