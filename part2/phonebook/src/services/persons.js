@@ -22,9 +22,7 @@ const replace = (person, newNumber) => {
 
 const deleteObject = (id) => {
     const deleteUrl = `${baseUrl}/${id}`
-    const request = axios.delete(deleteUrl)
-    
-    return request.then(response => response.data)
+    return axios.delete(deleteUrl)
 }
 
 export default { getAll, create, deleteObject, replace }
