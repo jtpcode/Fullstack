@@ -67,6 +67,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -79,6 +80,40 @@ const App = () => {
   const handleNameChange = event => setNewName(event.target.value)
   const handleNumberChange = event => setNewNumber(event.target.value)
   const handleFilterChange = event => setNewFilter(event.target.value)
+
+  const Notification = ( {message} ) => {
+    if (message === null) {
+      return null
+    }
+
+    const successStyle = {
+      color: 'green',
+      backGround: 'lightgrey',
+      fontSize: 20,
+      borderStyle: 'solid',
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10
+    }
+
+    const errorStyle = {
+      color: 'red',
+      backGround: 'lightgrey',
+      fontSize: 20,
+      borderStyle: 'solid',
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10
+    }
+
+    const style = message.type === 'success' ? successStyle : errorStyle
+
+    return (
+      <div style={style}>
+        {message.text}
+      </div>
+    )
+  }
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -96,6 +131,21 @@ const App = () => {
           .replace(person, newNumber)
           .then(changedPerson => {
             setPersons(persons.map(person => person.name !== newName ? person : changedPerson))
+            setMessage(
+              {text: `Information of ${person.name} was updated succesfully.`, type: 'success'}
+            )
+            setTimeout(() => {
+              setMessage(null)
+            }, 3000)
+          })
+          .catch(error => {
+            setMessage(
+              {text: `Information of ${person.name} has already been removed.`, type: 'error'}
+            )
+            setTimeout(() => {
+              setMessage(null)
+            }, 3000)
+            setPersons(persons.filter(p => p.id !== person.id))
           })
       }
     }
@@ -104,6 +154,12 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          setMessage(
+            {text: `${newName} was added succesfully.`, type: 'success'}
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
         })
     }
     
@@ -117,13 +173,31 @@ const App = () => {
     if (window.confirm(`Delete ${person.name}?`)) {
       personService
         .deleteObject(person.id)
-        .then(() => setPersons(persons.filter(p => p.id !== person.id)))
+        .then(() => {
+          setPersons(persons.filter(p => p.id !== person.id))
+          setMessage(
+            {text: `${person.name} was deleted succesfully.`, type: 'success'}
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
+        })
+        .catch(error => {
+          setMessage(
+            {text: `Information of ${person.name} has already been removed.`, type: 'error'}
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
+          setPersons(persons.filter(p => p.id !== person.id))
+        })
     }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message}/>
       <Filter newFilter={newFilter}
               handleFilterChange={handleFilterChange}
       />
