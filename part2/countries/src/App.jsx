@@ -13,7 +13,7 @@ const Find = ( {find, handleFindChange} ) => {
   )
 }
 
-const Countries = ({ countries, find }) => {
+const Countries = ({ countries, find, setFind }) => {
   const foundCountries = countries.filter(country =>
     country.name.common.toLowerCase().includes(find.toLowerCase())
   )
@@ -35,6 +35,7 @@ const Countries = ({ countries, find }) => {
           <Country
             key={country.name.common}
             country={country}
+            setFind={setFind}
           />
         )}
       </div>
@@ -43,34 +44,45 @@ const Countries = ({ countries, find }) => {
   else if (count === 1 ) {
     // If only one country, show details
     const country = foundCountries[0]
-    return (
-      <div>
-        <h1>
-          {country.name.common}
-        </h1>
-        Capital: {country.capital[0]}
-        <br />
-        Area: {country.area}
-        <h2>
-          Languages
-        </h2>
-        <ul>
-          {Object.entries(country.languages).map(([code, language]) => (
-            <li key={code}>{language}</li>
-          ))}
-        </ul>
-        <img src={country.flags.png} />
-      </div>
-    )
+    return countryDetails(country)
   }
 }
 
-const Country = ({ country }) => {
+const Country = ({ country, setFind }) => {
+  const countryName = country.name.common
   return (
     <>
-      {country.name.common}
+      {countryName + ' '}
+      <button onClick={(event) => {
+        event.preventDefault()
+        setFind(countryName)
+      }}>
+        Show
+      </button>
       <br />
     </>
+  )
+}
+
+const countryDetails = (country) => {
+  return (
+    <div>
+      <h1>
+        {country.name.common}
+      </h1>
+      Capital: {country.capital[0]}
+      <br />
+      Area: {country.area}
+      <h2>
+        Languages
+      </h2>
+      <ul>
+        {Object.entries(country.languages).map(([code, language]) => (
+          <li key={code}>{language}</li>
+        ))}
+      </ul>
+      <img src={country.flags.png} />
+    </div>
   )
 }
 
@@ -93,7 +105,11 @@ function App() {
         find={find}
         handleFindChange={handleFindChange}
       />
-      <Countries countries={countries} find={find} />
+      <Countries
+        countries={countries}
+        find={find}
+        setFind={setFind}
+      />
     </div>
   )
 }
