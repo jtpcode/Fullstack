@@ -17,8 +17,9 @@ const Countries = ({ countries, find }) => {
   const foundCountries = countries.filter(country =>
     country.name.common.toLowerCase().includes(find.toLowerCase())
   )
+  const count = foundCountries.length
 
-  if (foundCountries.length > 10) {
+  if (count > 10) {
     return (
       <div>
         <br />
@@ -26,18 +27,48 @@ const Countries = ({ countries, find }) => {
       </div>
     )
   }
-
-  return (
-    <div>
-      <br />
-      {foundCountries.map(country =>
-        <Country
-          key={country.name.common}
-          country={country}
-        />
-      )}
-    </div>
-  )
+  else if (count > 1) {
+    return (
+      <div>
+        <br />
+        {foundCountries.map(country =>
+          <Country
+            key={country.name.common}
+            country={country}
+          />
+        )}
+      </div>
+    )
+  }
+  else if (count === 1 ) {
+    // If only one country, show details
+    const country = foundCountries[0]
+    return (
+      <div>
+        <p>
+          <h1>
+            {country.name.common}
+          </h1>
+        </p>
+        <p>
+          {country.capital[0]}
+          Area: country.area
+        </p>
+        <p>
+          <h2>
+            Languages
+          </h2>
+        </p>
+        <p>
+          <ul>
+            {Object.entries(country.languages).map(([code, language]) => (
+              <li key={code}>{language}</li>
+            ))}
+          </ul>
+        </p>
+      </div>
+    )
+  }
 }
 
 const Country = ({ country }) => {
