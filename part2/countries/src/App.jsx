@@ -45,27 +45,21 @@ const Countries = ({ countries, find }) => {
     const country = foundCountries[0]
     return (
       <div>
-        <p>
-          <h1>
-            {country.name.common}
-          </h1>
-        </p>
-        <p>
-          {country.capital[0]}
-          Area: country.area
-        </p>
-        <p>
-          <h2>
-            Languages
-          </h2>
-        </p>
-        <p>
-          <ul>
-            {Object.entries(country.languages).map(([code, language]) => (
-              <li key={code}>{language}</li>
-            ))}
-          </ul>
-        </p>
+        <h1>
+          {country.name.common}
+        </h1>
+        Capital: {country.capital[0]}
+        <br />
+        Area: {country.area}
+        <h2>
+          Languages
+        </h2>
+        <ul>
+          {Object.entries(country.languages).map(([code, language]) => (
+            <li key={code}>{language}</li>
+          ))}
+        </ul>
+        <img src={country.flags.png} />
       </div>
     )
   }
