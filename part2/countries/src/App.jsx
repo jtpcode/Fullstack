@@ -13,11 +13,8 @@ const Find = ( {find, handleFindChange} ) => {
   )
 }
 
-const Countries = ({ countries, find, setFind }) => {
-  const foundCountries = countries.filter(country =>
-    country.name.common.toLowerCase().includes(find.toLowerCase())
-  )
-  const count = foundCountries.length
+const Countries = ({ filtered, setFind, weather }) => {
+  const count = filtered.length
 
   if (count > 10) {
     return (
@@ -31,7 +28,7 @@ const Countries = ({ countries, find, setFind }) => {
     return (
       <div>
         <br />
-        {foundCountries.map(country =>
+        {filtered.map(country =>
           <Country
             key={country.name.common}
             country={country}
@@ -42,10 +39,11 @@ const Countries = ({ countries, find, setFind }) => {
     )
   }
   else if (count === 1 ) {
-    // If only one country, show details
-    const country = foundCountries[0]
-    return countryDetails(country)
+    // If only one country, show details 
+    return countryDetails(filtered[0], weather)
   }
+
+  return null
 }
 
 const Country = ({ country, setFind }) => {
@@ -64,37 +62,70 @@ const Country = ({ country, setFind }) => {
   )
 }
 
-const countryDetails = (country) => {
-  return (
-    <div>
-      <h1>
-        {country.name.common}
-      </h1>
-      Capital: {country.capital[0]}
-      <br />
-      Area: {country.area}
-      <h2>
-        Languages
-      </h2>
-      <ul>
-        {Object.entries(country.languages).map(([code, language]) => (
-          <li key={code}>{language}</li>
-        ))}
-      </ul>
-      <img src={country.flags.png} />
-    </div>
-  )
+const countryDetails = (country, weather) => {
+  if (weather) {
+    const weatherUrl = `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
+
+    return (
+      <div>
+        <h1>
+          {country.name.common}
+        </h1>
+        Capital: {country.capital[0]}
+        <br />
+        Area: {country.area}
+        <h2>
+          Languages
+        </h2>
+        <ul>
+          {Object.entries(country.languages).map(([code, language]) => (
+            <li key={code}>{language}</li>
+          ))}
+        </ul>
+        <img src={country.flags.png} />
+        <h1>
+          Weather in {country.name.common}
+        </h1>
+        Temperature {weather.main.temp} Celsius
+        <br />
+        <img src={weatherUrl} />
+        <br />
+        Wind {weather.wind.speed} m/s
+      </div>
+    )
+  }
+  
+  return null
 }
 
 function App() {
   const [countries, setCountries] = useState([])
   const [find, setFind] = useState('')
+  const [filtered, setFiltered] = useState([])
+  const [weather, setWeather] = useState(null)
+
+  const API_key = import.meta.env.VITE_WEATHER_KEY
 
   useEffect( () => {
     countryService
       .getAll()
       .then(allCountries => setCountries(allCountries))
   }, [])
+
+  useEffect( () => {
+    const foundCountries = countries.filter(country =>
+      country.name.common.toLowerCase().includes(find.toLowerCase())
+    )
+    setFiltered(foundCountries)
+
+    // If only one country found, fetch capital weather
+    if (foundCountries.length === 1) {
+      const latlng = foundCountries[0].capitalInfo.latlng
+      countryService
+        .getCapitalWeather(latlng[0], latlng[1], API_key)
+        .then(weather => setWeather(weather))
+    }
+  }, [find])
 
   const handleFindChange = event => setFind(event.target.value)
 
@@ -106,9 +137,9 @@ function App() {
         handleFindChange={handleFindChange}
       />
       <Countries
-        countries={countries}
-        find={find}
+        filtered={filtered}
         setFind={setFind}
+        weather={weather}
       />
     </div>
   )
