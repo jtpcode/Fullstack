@@ -198,8 +198,9 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Notification message={message}/>
-      <Filter newFilter={newFilter}
-              handleFilterChange={handleFilterChange}
+      <Filter
+        newFilter={newFilter}
+        handleFilterChange={handleFilterChange}
       />
 
       <h3>Add a new person</h3>
