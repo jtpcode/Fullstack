@@ -161,6 +161,14 @@ const App = () => {
             setMessage(null)
           }, 3000)
         })
+        .catch(error => {
+          setMessage(
+            {text: `${error.response.data.error}`, type: 'error'}
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
+        })
     }
     
     setNewName('')
