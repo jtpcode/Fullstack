@@ -4,7 +4,7 @@ import personService from './services/persons'
 const Filter = ({ newFilter, handleFilterChange }) => {
   return (
     <div>
-      Filter shown numbers with: 
+      Filter shown numbers with:
       <input
         value={newFilter}
         onChange={handleFilterChange}
@@ -17,14 +17,14 @@ const PersonForm = ({ newName, newNumber, handleNameChange, handleNumberChange, 
   return (
     <form onSubmit={addPerson}>
       <div>
-        Name: 
-        <input 
+        Name:
+        <input
           value={newName}
           onChange={handleNameChange}
         />
       </div>
       <div>
-        Number: 
+        Number:
         <input
           value={newNumber}
           onChange={handleNumberChange}
@@ -44,7 +44,7 @@ const Persons = ({ persons, newFilter, deletePerson }) => {
 
   return (
     <div>
-      {filtered_persons.map(person => 
+      {filtered_persons.map(person =>
         <Person
           key={person.name}
           person={person}
@@ -63,7 +63,7 @@ const Person = ({ person, deletePerson }) => {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([]) 
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
@@ -81,7 +81,7 @@ const App = () => {
   const handleNumberChange = event => setNewNumber(event.target.value)
   const handleFilterChange = event => setNewFilter(event.target.value)
 
-  const Notification = ( {message} ) => {
+  const Notification = ({ message }) => {
     if (message === null) {
       return null
     }
@@ -132,15 +132,15 @@ const App = () => {
           .then(changedPerson => {
             setPersons(persons.map(person => person.name !== newName ? person : changedPerson))
             setMessage(
-              {text: `Information of ${person.name} was updated succesfully.`, type: 'success'}
+              { text: `Information of ${person.name} was updated succesfully.`, type: 'success' }
             )
             setTimeout(() => {
               setMessage(null)
             }, 5000)
           })
-          .catch(error => {
+          .catch(() => {
             setMessage(
-              {text: `Information of ${person.name} has already been removed.`, type: 'error'}
+              { text: `Information of ${person.name} has already been removed.`, type: 'error' }
             )
             setTimeout(() => {
               setMessage(null)
@@ -155,7 +155,7 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
           setMessage(
-            {text: `${newName} was added succesfully.`, type: 'success'}
+            { text: `${newName} was added succesfully.`, type: 'success' }
           )
           setTimeout(() => {
             setMessage(null)
@@ -163,14 +163,14 @@ const App = () => {
         })
         .catch(error => {
           setMessage(
-            {text: `${error.response.data.error}`, type: 'error'}
+            { text: `${error.response.data.error}`, type: 'error' }
           )
           setTimeout(() => {
             setMessage(null)
           }, 5000)
         })
     }
-    
+
     setNewName('')
     setNewNumber('')
   }
@@ -184,15 +184,15 @@ const App = () => {
         .then(() => {
           setPersons(persons.filter(p => p.id !== person.id))
           setMessage(
-            {text: `${person.name} was deleted succesfully.`, type: 'success'}
+            { text: `${person.name} was deleted succesfully.`, type: 'success' }
           )
           setTimeout(() => {
             setMessage(null)
           }, 5000)
         })
-        .catch(error => {
+        .catch(() => {
           setMessage(
-            {text: `Information of ${person.name} has already been removed.`, type: 'error'}
+            { text: `Information of ${person.name} has already been removed.`, type: 'error' }
           )
           setTimeout(() => {
             setMessage(null)
@@ -227,7 +227,7 @@ const App = () => {
         deletePerson={deletePerson}
       />
     </div>
-    
+
   )
 }
 
