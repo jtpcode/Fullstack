@@ -136,7 +136,7 @@ const App = () => {
             )
             setTimeout(() => {
               setMessage(null)
-            }, 3000)
+            }, 5000)
           })
           .catch(error => {
             setMessage(
@@ -144,7 +144,7 @@ const App = () => {
             )
             setTimeout(() => {
               setMessage(null)
-            }, 3000)
+            }, 5000)
             setPersons(persons.filter(p => p.id !== person.id))
           })
       }
@@ -159,7 +159,7 @@ const App = () => {
           )
           setTimeout(() => {
             setMessage(null)
-          }, 3000)
+          }, 5000)
         })
         .catch(error => {
           setMessage(
@@ -167,7 +167,7 @@ const App = () => {
           )
           setTimeout(() => {
             setMessage(null)
-          }, 3000)
+          }, 5000)
         })
     }
     
@@ -188,7 +188,7 @@ const App = () => {
           )
           setTimeout(() => {
             setMessage(null)
-          }, 3000)
+          }, 5000)
         })
         .catch(error => {
           setMessage(
@@ -196,7 +196,7 @@ const App = () => {
           )
           setTimeout(() => {
             setMessage(null)
-          }, 3000)
+          }, 5000)
           setPersons(persons.filter(p => p.id !== person.id))
         })
     }
