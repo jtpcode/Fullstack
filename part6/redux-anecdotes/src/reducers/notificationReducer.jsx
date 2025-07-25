@@ -6,27 +6,21 @@ const notificationSlice = createSlice({
   initialState,
   reducers: {
     setNotification(state, action) {
-      console.log('showNotification state: ', state)
-      console.log('showNotification action', action)
-
       return action.payload
     },
     removeNotification(state, action) {
-      console.log('removeNotification state: ', state)
-      console.log('removeNotification action', action)
-
       return ''
     }
   }
 })
 
-// Redux thunk
-export const showNotification = (message) => {
+export const showNotification = (message, timeout) => {
   return dispatch => {
+    const delay = timeout * 1000
     dispatch(setNotification(message))
     setTimeout(() => {
       dispatch(removeNotification())
-    }, 2000)
+    }, delay)
   }
 }
 
