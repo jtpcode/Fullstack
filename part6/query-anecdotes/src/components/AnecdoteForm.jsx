@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createAnecdote } from '../requests'
+import { useNotificationDispatch } from '../NotificationContext'
 
 const AnecdoteForm = () => {
   const queryClient =  useQueryClient()
+  const dispatchNotification = useNotificationDispatch()
 
   const newAnecdoteMutation = useMutation({
     mutationFn: createAnecdote,
@@ -11,7 +13,8 @@ const AnecdoteForm = () => {
       queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))
     },
     onError: (error) => {
-      console.error('Error in POST:', error.response?.data || error.message)
+      console.error('Error in CREATE_NEW:', error.response.data.error)
+      dispatchNotification(error.response.data.error)
     }
   })
 
@@ -20,6 +23,7 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
     newAnecdoteMutation.mutate({ content:content, votes: 0 })
+    dispatchNotification(`You added: '${content}'`)
 }
 
   return (
