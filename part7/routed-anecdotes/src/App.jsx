@@ -7,6 +7,7 @@ import {
   useParams,
   useNavigate,
 } from "react-router-dom"
+import { useField } from './hooks'
 
 const Anecdote = ({ anecdotes }) => {
   const id = useParams().id
@@ -64,22 +65,23 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const content = useField('text')
+  const author = useField('text')
+  const info = useField('text')
 
   const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault()
+
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.inputProps.value,
+      author: author.inputProps.value,
+      info: info.inputProps.value,
       votes: 0
     })
     props.setNotification(
-      `A new anecdote '${content}' created!`
+      `A new anecdote '${content.inputProps.value}' created!`
     )
     setTimeout(() => {
       props.setNotification('')
@@ -87,23 +89,30 @@ const CreateNew = (props) => {
     navigate('/')
   }
 
+  const handleReset = () => {
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
   return (
     <div>
-      <h2>create a new anecdote</h2>
+      <h2>Create a new anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          Content
+          <input name='content' {...content.inputProps} />
         </div>
         <div>
-          author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          Author
+          <input name='author' {...author.inputProps} />
         </div>
         <div>
-          url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
+          Url for more info
+          <input name='info' {...info.inputProps} />
         </div>
-        <button>create</button>
+        <button type='submit'>Create</button>
+        <button type='button' onClick={handleReset}>Reset</button>
       </form>
     </div>
   )
