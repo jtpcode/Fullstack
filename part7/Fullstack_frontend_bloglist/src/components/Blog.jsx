@@ -16,8 +16,7 @@ const Blog = ({ blog, addLike, user, removeBlog }) => {
   const deleteShown = { display: usersBlog ? '' : 'none' }
 
   const likeBlog = () => {
-    blog.likes += 1
-    addLike(blog)
+    addLike({ ...blog, likes: blog.likes + 1 })
   }
 
   const deleteBlog = () => {

@@ -5,7 +5,8 @@ import { showNotification } from './reducers/notificationReducer'
 import {
   initializeBlogs,
   createBlog,
-  deleteBlog
+  deleteBlog,
+  likeBlog
 } from './reducers/blogsReducer'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -18,7 +19,6 @@ const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector(({ blogs }) => blogs)
 
-  const [blogsit, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -28,7 +28,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(initializeBlogs())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -101,7 +101,7 @@ const App = () => {
 
   const addLike = async (likedBlog) => {
     try {
-      await blogService.addLike(likedBlog)
+      dispatch(likeBlog(likedBlog))
       dispatch(
         showNotification(
           { text: `Blog "${likedBlog.title}" liked`, type: 'success' },
