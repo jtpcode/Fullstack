@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Notification from './components/Notification'
 import { showNotification } from './reducers/notificationReducer'
+import {
+  initializeBlogs,
+  createBlog,
+  deleteBlog
+} from './reducers/blogsReducer'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -11,8 +16,9 @@ import Togglable from './components/Togglable'
 
 const App = () => {
   const dispatch = useDispatch()
+  const blogs = useSelector(({ blogs }) => blogs)
 
-  const [blogs, setBlogs] = useState([])
+  const [blogsit, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -21,7 +27,7 @@ const App = () => {
   const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    dispatch(initializeBlogs())
   }, [])
 
   useEffect(() => {
@@ -63,8 +69,7 @@ const App = () => {
   const addBlog = async (newBlog) => {
     try {
       blogFormRef.current.toggleVisibility()
-      const returnedBlog = await blogService.create(newBlog)
-      setBlogs(blogs.concat(returnedBlog))
+      dispatch(createBlog(newBlog))
       dispatch(
         showNotification(
           { text: `New blog "${newBlog.title}" added`, type: 'success' },
@@ -78,10 +83,9 @@ const App = () => {
     }
   }
 
-  const deleteBlog = async (blog) => {
+  const removeBlog = async (blog) => {
     try {
-      await blogService.deleteBlog(blog.id)
-      setBlogs(blogs.filter((b) => b.id !== blog.id))
+      dispatch(deleteBlog(blog.id))
       dispatch(
         showNotification(
           { text: `Blog "${blog.title}" deleted`, type: 'success' },
@@ -164,7 +168,7 @@ const App = () => {
               blog={blog}
               addLike={addLike}
               user={user}
-              deleteBlog={deleteBlog}
+              removeBlog={removeBlog}
             />
           ))}
         <br />

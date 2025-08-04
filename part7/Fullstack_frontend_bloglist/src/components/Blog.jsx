@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, addLike, user, deleteBlog }) => {
+const Blog = ({ blog, addLike, user, removeBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -20,10 +20,10 @@ const Blog = ({ blog, addLike, user, deleteBlog }) => {
     addLike(blog)
   }
 
-  const removeBlog = () => {
+  const deleteBlog = () => {
     const ok = window.confirm(`Delete blog '${blog.title}'?`)
     if (ok) {
-      deleteBlog(blog)
+      removeBlog(blog)
     }
   }
 
@@ -31,20 +31,22 @@ const Blog = ({ blog, addLike, user, deleteBlog }) => {
     <div>
       <div style={{ ...blogStyle }}>
         {blog.title}
-        <div style={ detailsHidden } className="title">
+        <div style={detailsHidden} className="title">
           <button onClick={() => setDetailsVisible(true)}>View</button>
         </div>
-        <div style={ detailsShown } className="details">
+        <div style={detailsShown} className="details">
           <div>{blog.url}</div>
           <div>{blog.likes} likes</div>
           <div>{blog.author}</div>
-          <button onClick={() => setDetailsVisible(false)}>Hide</button>
-          {' '}
+          <button onClick={() => setDetailsVisible(false)}>Hide</button>{' '}
           <button onClick={likeBlog}>Like</button>
-          <button style={deleteShown} onClick={removeBlog}>Delete</button>
+          <button style={deleteShown} onClick={deleteBlog}>
+            Delete
+          </button>
         </div>
       </div>
     </div>
-  )}
+  )
+}
 
 export default Blog
