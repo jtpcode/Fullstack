@@ -8,6 +8,7 @@ import {
   deleteBlog,
   likeBlog
 } from './reducers/blogsReducer'
+import { setUser, unsetUser } from './reducers/userReducer'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -18,10 +19,10 @@ import Togglable from './components/Togglable'
 const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector(({ blogs }) => blogs)
+  const currentUser = useSelector(({ user }) => user)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const [loginVisible, setLoginVisible] = useState(false)
 
   const blogFormRef = useRef()
@@ -34,7 +35,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setUser(user))
       blogService.setToken(user.token)
     }
   }, [])
@@ -50,7 +51,7 @@ const App = () => {
 
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
       blogService.setToken(user.token)
-      setUser(user)
+      dispatch(setUser(user))
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -62,7 +63,7 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.clear()
-    setUser(null)
+    dispatch(unsetUser())
     blogService.setToken(null)
   }
 
@@ -138,7 +139,7 @@ const App = () => {
     )
   }
 
-  if (user === null) {
+  if (currentUser === null) {
     return (
       <div>
         <h2>Blogs</h2>
@@ -154,7 +155,7 @@ const App = () => {
       <Notification />
 
       <div>
-        <p>{user.name} logged in</p>
+        <p>{currentUser.name} logged in</p>
         <h2>Create a new blog</h2>
         <Togglable buttonLabel="New blog" ref={blogFormRef}>
           <BlogForm addBlog={addBlog} />
@@ -167,7 +168,7 @@ const App = () => {
               key={blog.id}
               blog={blog}
               addLike={addLike}
-              user={user}
+              user={currentUser}
               removeBlog={removeBlog}
             />
           ))}
