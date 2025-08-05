@@ -1,34 +1,31 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom'
+
 import Notification from './components/Notification'
 import { showNotification } from './reducers/notificationReducer'
-import {
-  initializeBlogs,
-  createBlog,
-  deleteBlog,
-  likeBlog
-} from './reducers/blogsReducer'
+import { initializeBlogs } from './reducers/blogsReducer'
+import { initializeUsers } from './reducers/usersReducer'
 import { setUser, unsetUser } from './reducers/userReducer'
-import Blog from './components/Blog'
+import Blogs from './components/Blogs'
+import Users from './components/Users'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
-import BlogForm from './components/BlogForm'
-import Togglable from './components/Togglable'
 
 const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector(({ blogs }) => blogs)
+  const users = useSelector(({ users }) => users)
   const currentUser = useSelector(({ user }) => user)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loginVisible, setLoginVisible] = useState(false)
 
-  const blogFormRef = useRef()
-
   useEffect(() => {
     dispatch(initializeBlogs())
+    dispatch(initializeUsers())
   }, [dispatch])
 
   useEffect(() => {
@@ -38,7 +35,7 @@ const App = () => {
       dispatch(setUser(user))
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [dispatch])
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -67,55 +64,6 @@ const App = () => {
     blogService.setToken(null)
   }
 
-  const addBlog = async (newBlog) => {
-    try {
-      blogFormRef.current.toggleVisibility()
-      dispatch(createBlog(newBlog))
-      dispatch(
-        showNotification(
-          { text: `New blog "${newBlog.title}" added`, type: 'success' },
-          3
-        )
-      )
-    } catch (exception) {
-      dispatch(
-        showNotification({ text: 'Creating blog failed.', type: 'error' }, 3)
-      )
-    }
-  }
-
-  const removeBlog = async (blog) => {
-    try {
-      dispatch(deleteBlog(blog.id))
-      dispatch(
-        showNotification(
-          { text: `Blog "${blog.title}" deleted`, type: 'success' },
-          3
-        )
-      )
-    } catch (exception) {
-      dispatch(
-        showNotification({ text: 'Deleting blog failed.', type: 'error' }, 3)
-      )
-    }
-  }
-
-  const addLike = async (likedBlog) => {
-    try {
-      dispatch(likeBlog(likedBlog))
-      dispatch(
-        showNotification(
-          { text: `Blog "${likedBlog.title}" liked`, type: 'success' },
-          3
-        )
-      )
-    } catch (exception) {
-      dispatch(
-        showNotification({ text: 'Liking a blog failed.', type: 'error' }, 3)
-      )
-    }
-  }
-
   const loginForm = () => {
     const loginHidden = { display: loginVisible ? 'none' : '' }
     const loginShown = { display: loginVisible ? '' : 'none' }
@@ -139,6 +87,10 @@ const App = () => {
     )
   }
 
+  const padding = {
+    padding: 5
+  }
+
   if (currentUser === null) {
     return (
       <div>
@@ -151,30 +103,37 @@ const App = () => {
 
   return (
     <div>
-      <h2>Blogs</h2>
       <Notification />
 
       <div>
-        <p>{currentUser.name} logged in</p>
-        <h2>Create a new blog</h2>
-        <Togglable buttonLabel="New blog" ref={blogFormRef}>
-          <BlogForm addBlog={addBlog} />
-        </Togglable>
-        <br />
-        {[...blogs]
-          .sort((a, b) => b.likes - a.likes)
-          .map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              addLike={addLike}
-              user={currentUser}
-              removeBlog={removeBlog}
-            />
-          ))}
-        <br />
-        <button onClick={handleLogout}>Logout</button>
+        <Link style={padding} to="/blogs">
+          Blogs
+        </Link>
+        <Link style={padding} to="/users">
+          Users
+        </Link>
+        {<em>{currentUser.name} logged in</em>}
+        <button onClick={handleLogout} style={padding}>
+          Logout
+        </button>
       </div>
+
+      <Routes>
+        <Route
+          path="/"
+          element={
+            currentUser ? (
+              <Blogs blogs={blogs} currentUser={currentUser} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route path="/blogs" element={<Navigate to="/" />} />
+        {/* <Route path="/blogs/:id" element={<Blog blog={blog} />} /> */}
+        <Route path="/users" element={<Users users={users} />} />
+        <Route path="/login" element={loginForm()} />
+      </Routes>
     </div>
   )
 }
