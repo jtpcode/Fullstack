@@ -1,15 +1,23 @@
 import { useRef } from 'react'
 import { useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom'
 
-import { createBlog, deleteBlog, likeBlog } from '../reducers/blogsReducer'
+import { createBlog } from '../reducers/blogsReducer'
 import { showNotification } from '../reducers/notificationReducer'
 import BlogForm from './BlogForm'
 import Togglable from './Togglable'
-import Blog from './Blog'
 
-const Blogs = ({ blogs, currentUser }) => {
+const Blogs = ({ blogs }) => {
   const dispatch = useDispatch()
   const blogFormRef = useRef()
+
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5
+  }
 
   const addBlog = async (newBlog) => {
     try {
@@ -28,42 +36,9 @@ const Blogs = ({ blogs, currentUser }) => {
     }
   }
 
-  const removeBlog = async (blog) => {
-    try {
-      dispatch(deleteBlog(blog.id))
-      dispatch(
-        showNotification(
-          { text: `Blog "${blog.title}" deleted`, type: 'success' },
-          3
-        )
-      )
-    } catch (exception) {
-      dispatch(
-        showNotification({ text: 'Deleting blog failed.', type: 'error' }, 3)
-      )
-    }
-  }
-
-  const addLike = async (likedBlog) => {
-    try {
-      dispatch(likeBlog(likedBlog))
-      dispatch(
-        showNotification(
-          { text: `Blog "${likedBlog.title}" liked`, type: 'success' },
-          3
-        )
-      )
-    } catch (exception) {
-      dispatch(
-        showNotification({ text: 'Liking a blog failed.', type: 'error' }, 3)
-      )
-    }
-  }
-
   return (
     <div>
       <h2>Blogs</h2>
-      <h2>Create a new blog</h2>
       <Togglable buttonLabel="New blog" ref={blogFormRef}>
         <BlogForm addBlog={addBlog} />
       </Togglable>
@@ -71,13 +46,9 @@ const Blogs = ({ blogs, currentUser }) => {
       {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            addLike={addLike}
-            user={currentUser}
-            removeBlog={removeBlog}
-          />
+          <div style={blogStyle} key={blog.id}>
+            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+          </div>
         ))}
       <br />
     </div>
