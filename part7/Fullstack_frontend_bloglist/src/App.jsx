@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom'
+import {
+  Routes,
+  Route,
+  Link,
+  Navigate,
+  useMatch,
+  useNavigate
+} from 'react-router-dom'
 
 import Notification from './components/Notification'
 import { showNotification } from './reducers/notificationReducer'
@@ -9,6 +16,7 @@ import { initializeUsers } from './reducers/usersReducer'
 import { setUser, unsetUser } from './reducers/userReducer'
 import Blogs from './components/Blogs'
 import Users from './components/Users'
+import User from './components/User'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
@@ -132,6 +140,7 @@ const App = () => {
         <Route path="/blogs" element={<Navigate to="/" />} />
         {/* <Route path="/blogs/:id" element={<Blog blog={blog} />} /> */}
         <Route path="/users" element={<Users users={users} />} />
+        <Route path="/users/:id" element={<User users={users} />} />
         <Route path="/login" element={loginForm()} />
       </Routes>
     </div>

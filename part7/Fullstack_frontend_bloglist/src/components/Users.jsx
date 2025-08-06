@@ -1,4 +1,4 @@
-import User from './User'
+import { Link } from 'react-router-dom'
 
 const Users = ({ users }) => {
   return (
@@ -13,7 +13,12 @@ const Users = ({ users }) => {
         </thead>
         <tbody>
           {users.map((user) => (
-            <User key={user.id} user={user} />
+            <tr key={user.id}>
+              <td>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </td>
+              <td>{user.blogs.length}</td>
+            </tr>
           ))}
         </tbody>
       </table>
