@@ -1,6 +1,26 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
-const { v1: uuid } = require('uuid')
+// const { v1: uuid } = require('uuid')
+
+const mongoose = require('mongoose')
+mongoose.set('strictQuery', false)
+const Book = require('./models/book')
+const Author = require('./models/author')
+const User = require('./models/user')
+require('dotenv').config()
+
+const MONGODB_URI = process.env.MONGODB_URI
+
+console.log('connecting to', MONGODB_URI)
+
+mongoose
+  .connect(MONGODB_URI)
+  .then(() => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log('error connection to MongoDB:', error.message)
+  })
 
 let authors = [
   {
@@ -94,10 +114,6 @@ let books = [
   }
 ]
 
-/*
-  you can remove the placeholder query once your first one has been implemented 
-*/
-
 const typeDefs = `
   type Author {
     name: String!
@@ -109,7 +125,7 @@ const typeDefs = `
   type Book {
     title: String!
     published: Int!
-    author: String!
+    author: Author!
     genres: [String!]!
     id: ID!
   }
@@ -126,8 +142,8 @@ const typeDefs = `
       title: String!
       author: String!
       published: Int!
-      genres: [String]!
-    ): Book
+      genres: [String!]!
+    ): Book!
 
     editAuthor(
       name: String!
@@ -138,10 +154,10 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    bookCount: () => books.length,
-    authorCount: () => authors.length,
-    allBooks: (root, args) => {
-      let filteredBooks = books
+    bookCount: async () => Book.collection.countDocuments(),
+    authorCount: () => Author.collection.countDocuments(),
+    allBooks: async (root, args) => {
+      let filteredBooks = Book.find({})
 
       if (args.author) {
         filteredBooks = filteredBooks.filter(
@@ -157,7 +173,7 @@ const resolvers = {
 
       return filteredBooks
     },
-    allAuthors: () => authors
+    allAuthors: async () => Author.find({})
   },
   Author: {
     bookCount: (root) => {
@@ -165,14 +181,17 @@ const resolvers = {
     }
   },
   Mutation: {
-    addBook: (root, args) => {
-      if (!authors.find((author) => author.name === args.author)) {
-        const author = { name: args.author, id: uuid() }
-        authors = authors.concat(author)
+    addBook: async (root, args) => {
+      let author = await Author.findOne({ name: args.author })
+      if (!author) {
+        const newAuthor = new Author({ name: args.author })
+        author = await newAuthor.save()
       }
-      const book = { ...args, id: uuid() }
-      books = books.concat(book)
-      return book
+      const book = new Book({ ...args, author: author._id })
+      const savedBook = await book.save()
+      await savedBook.populate('author')
+
+      return savedBook
     },
     editAuthor: (root, args) => {
       const author = authors.find((author) => author.name === args.name)
