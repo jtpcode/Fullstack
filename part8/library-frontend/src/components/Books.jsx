@@ -4,7 +4,10 @@ import { ALL_BOOKS } from '../queries'
 
 const Books = ({ show }) => {
   const [genre, setGenre] = useState('')
-  const { data, loading } = useQuery(ALL_BOOKS, {
+  const { data: allData, loading: loadingAll } = useQuery(ALL_BOOKS, {
+    skip: !show
+  })
+  const { data: filteredData, loading: loadingFiltered } = useQuery(ALL_BOOKS, {
     variables: { genre: genre },
     skip: !show
   })
@@ -13,15 +16,15 @@ const Books = ({ show }) => {
     return null
   }
 
-  if (loading) return <p>Loading...</p>
+  if (loadingAll || loadingFiltered) return <p>Loading...</p>
 
-  const books = data.allBooks
-  const genres = [...new Set(books.flatMap((book) => book.genres))]
+  const allBooks = allData.allBooks
+  const filteredBooks = filteredData.allBooks
+  const genres = [...new Set(allBooks.flatMap((book) => book.genres))]
 
   return (
     <div>
       <h2>Books</h2>
-
       <table>
         <tbody>
           <tr>
@@ -29,7 +32,7 @@ const Books = ({ show }) => {
             <th>Author</th>
             <th>Published</th>
           </tr>
-          {books.map((b) => (
+          {filteredBooks.map((b) => (
             <tr key={b.title}>
               <td>{b.title}</td>
               <td>{b.author.name}</td>
