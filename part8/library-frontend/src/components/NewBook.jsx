@@ -10,34 +10,59 @@ const NewBook = ({ show }) => {
   const [genres, setGenres] = useState([])
 
   const [createBook] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_AUTHORS }],
-    awaitRefetchQueries: true,
     update: (cache, response) => {
       const newBook = response.data.addBook
 
-      // cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
-      //   return { allAuthors: allAuthors.concat(newBook.author) }
-      // })
+      cache.updateQuery({ query: ALL_BOOKS }, (data) => {
+        if (!data) return data
 
-      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
-        return { allBooks: allBooks.concat(newBook) }
+        return { allBooks: data.allBooks.concat(newBook) }
       })
 
-      genres.forEach((g) => {
+      newBook.genres.forEach((g) => {
         cache.updateQuery(
           { query: ALL_BOOKS, variables: { genre: g } },
-          ({ allBooks }) => {
-            return { allBooks: allBooks.concat(newBook) }
+          (data) => {
+            if (!data) return data
+
+            return { allBooks: data.allBooks.concat(newBook) }
           }
         )
       })
 
       cache.updateQuery(
         { query: ALL_BOOKS, variables: { genre: '' } },
-        ({ allBooks }) => {
-          return { allBooks: allBooks.concat(newBook) }
+        (data) => {
+          if (!data) return data
+
+          return { allBooks: data.allBooks.concat(newBook) }
         }
       )
+
+      cache.updateQuery({ query: ALL_AUTHORS }, (data) => {
+        if (!data) return data
+
+        const existingAuthor = data.allAuthors.find(
+          (a) => a.name === newBook.author.name
+        )
+
+        if (existingAuthor) {
+          return {
+            allAuthors: data.allAuthors.map((a) =>
+              a.name === newBook.author.name
+                ? { ...a, bookCount: a.bookCount + 1 }
+                : a
+            )
+          }
+        }
+        return {
+          allAuthors: data.allAuthors.concat({
+            name: newBook.author.name,
+            born: null,
+            bookCount: 1
+          })
+        }
+      })
     }
   })
 

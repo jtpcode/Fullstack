@@ -34,8 +34,8 @@ const Authors = ({ show, authors }) => {
         <tbody>
           <tr>
             <th></th>
-            <th>born</th>
-            <th>books</th>
+            <th>Born</th>
+            <th>Books</th>
           </tr>
           {authors.map((a) => (
             <tr key={a.name}>
