@@ -3,7 +3,7 @@ interface BmiCalculatorValues {
   weight: number;
 }
 
-const parseArguments = (args: string[]): BmiCalculatorValues => {
+const parseBmiInputs = (args: string[]): BmiCalculatorValues => {
   if (args.length < 4) throw new Error('Not enough arguments');
   if (args.length > 4) throw new Error('Too many arguments');
 
@@ -19,27 +19,27 @@ const parseArguments = (args: string[]): BmiCalculatorValues => {
   );
 }
 
-const bmiCalculator = (height: number, weight: number, printText: string) => {
+export const calculateBmi = (height: number, weight: number) => {
   const bmi = weight / (height / 100) ** 2;
   if (bmi < 25) {
-    printText = 'Normal range';
-  } else {
-    printText = 'Overweight';
+    return 'Normal range';
   }
-  console.log(printText);
+  return 'Overweight';
 }
 
-try {
-  const { height, weight } = parseArguments(process.argv);
-  bmiCalculator(
-    height,
-    weight,
-    `BMI for height ${height}cm and weight ${weight}kg is:`,
-  );
-} catch (error: unknown) {
-  let errorMessage = 'Something went wrong.';
-  if (error instanceof Error) {
-    errorMessage += ' Error: ' + error.message;
+if (require.main === module) {
+  try {
+    const { height, weight } = parseBmiInputs(process.argv);
+    const result = calculateBmi(
+      height,
+      weight
+    );
+    console.log(result);
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong.';
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    console.log(errorMessage);
   }
-  console.log(errorMessage);
 }

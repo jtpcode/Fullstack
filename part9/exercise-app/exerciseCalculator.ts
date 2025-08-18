@@ -3,7 +3,7 @@ interface ExerciseCalculatorValues {
   targetHoursPerDay: number;
 }
 
-const parseArguments = (args: string[]): ExerciseCalculatorValues  => {
+const parseExerciseArguments = (args: string[]): ExerciseCalculatorValues  => {
   if (args.length < 4) throw new Error('Not enough arguments');
 
   const targetHours = Number(args[2]);
@@ -32,7 +32,7 @@ interface ExerciseResult {
   average: number;
 }
 
-const exerciseCalculator = (dailyExerciseHours: number[], targetHoursPerDay: number): ExerciseResult => {
+const calculateExercises = (dailyExerciseHours: number[], targetHoursPerDay: number): ExerciseResult => {
   const periodLength = dailyExerciseHours.length;
   const trainingDays = dailyExerciseHours.filter(hours => hours > 0).length;
   const success = dailyExerciseHours.every(hours => hours >= targetHoursPerDay);
@@ -65,8 +65,8 @@ const exerciseCalculator = (dailyExerciseHours: number[], targetHoursPerDay: num
 }
 
 try {
-  const { dailyExerciseHours, targetHoursPerDay } = parseArguments(process.argv);
-  const result = exerciseCalculator(
+  const { dailyExerciseHours, targetHoursPerDay } = parseExerciseArguments(process.argv);
+  const result = calculateExercises(
     dailyExerciseHours,
     targetHoursPerDay
   );
