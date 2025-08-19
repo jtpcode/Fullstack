@@ -14,13 +14,13 @@ const parseExerciseArguments = (args: string[]): ExerciseCalculatorValues  => {
     return {
       dailyExerciseHours: dailyHours,
       targetHoursPerDay: targetHours,
-    }
+    };
   }
 
   throw new Error(
     'Given values are not numbers.',
   );
-}
+};
 
 interface ExerciseResult {
   periodLength: number;
@@ -32,7 +32,7 @@ interface ExerciseResult {
   average: number;
 }
 
-const calculateExercises = (dailyExerciseHours: number[], targetHoursPerDay: number): ExerciseResult => {
+export const calculateExercises = (dailyExerciseHours: number[], targetHoursPerDay: number): ExerciseResult => {
   const periodLength = dailyExerciseHours.length;
   const trainingDays = dailyExerciseHours.filter(hours => hours > 0).length;
   const success = dailyExerciseHours.every(hours => hours >= targetHoursPerDay);
@@ -62,19 +62,21 @@ const calculateExercises = (dailyExerciseHours: number[], targetHoursPerDay: num
     target,
     average,
   };
-}
+};
 
-try {
-  const { dailyExerciseHours, targetHoursPerDay } = parseExerciseArguments(process.argv);
-  const result = calculateExercises(
-    dailyExerciseHours,
-    targetHoursPerDay
-  );
-  console.log(result)
-} catch (error: unknown) {
-  let errorMessage = 'Something went wrong.';
-  if (error instanceof Error) {
-    errorMessage += ' Error: ' + error.message;
+if (require.main === module) {
+  try {
+    const { dailyExerciseHours, targetHoursPerDay } = parseExerciseArguments(process.argv);
+    const result = calculateExercises(
+      dailyExerciseHours,
+      targetHoursPerDay
+    );
+    console.log(result);
+  } catch (error: unknown) {
+    let errorMessage = 'Something went wrong.';
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    console.log(errorMessage);
   }
-  console.log(errorMessage);
 }

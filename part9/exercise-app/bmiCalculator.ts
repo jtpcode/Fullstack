@@ -11,13 +11,13 @@ const parseBmiInputs = (args: string[]): BmiCalculatorValues => {
     return {
       height: Number(args[2]),
       weight: Number(args[3]),
-    }
+    };
   }
 
   throw new Error(
     'Given values are not numbers. Please provide valid numbers for height and weight.',
   );
-}
+};
 
 export const calculateBmi = (height: number, weight: number) => {
   const bmi = weight / (height / 100) ** 2;
@@ -25,7 +25,7 @@ export const calculateBmi = (height: number, weight: number) => {
     return 'Normal range';
   }
   return 'Overweight';
-}
+};
 
 if (require.main === module) {
   try {
