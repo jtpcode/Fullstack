@@ -3,19 +3,22 @@ import { useParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { Male, Female, Transgender } from '@mui/icons-material';
 
-import { Patient } from '../../types';
+import { Patient, Diagnosis } from '../../types';
 import patientService from '../../services/patients';
 
 const PatientPage = () => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
 
   useEffect(() => {
     const fetchPatient = async () => {
       if (!id) return;
       try {
         const patientData = await patientService.getById(id);
+        const diagnosesData = await patientService.getDiagnoses();
         setPatient(patientData);
+        setDiagnoses(diagnosesData);
       } catch (err) {
         console.error('Error fetching patient:', err);
       }
@@ -71,23 +74,27 @@ const PatientPage = () => {
           </Typography>
         </Box>
 
-        <Box>
+        {patient.entries && patient.entries.length > 0 ? (
           <Box>
-            <Typography variant='body1'>
-              {patient.entries[0].date}:{' '}
-              <em>{patient.entries[0].description}</em>
-            </Typography>
+            <Box>
+              <Typography variant='body1'>
+                {patient.entries[0].date}:{' '}
+                <em>{patient.entries[0].description}</em>
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant='body1' component='div'>
+                <ul>
+                  {patient.entries[0].diagnosisCodes?.map(code => (
+                    <li key={code}>{code} {diagnoses.find(d => d.code === code)?.name}</li>
+                  ))}
+                </ul>
+              </Typography>
+            </Box>
           </Box>
-          <Box>
-            <Typography variant='body1' component='div'>
-              <ul>
-                {patient.entries[0].diagnosisCodes?.map(code => (
-                  <li key={code}>{code}</li>
-                ))}
-              </ul>
-            </Typography>
-          </Box>
-        </Box>
+        ) : (
+          <Typography variant='body1'>No entries</Typography>
+        )}
       </Box>
     </Box>
   );
